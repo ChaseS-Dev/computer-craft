@@ -58,7 +58,10 @@ if startY == nil then
 end
 local totalBlocks = getTotalBlocks(startY)
 local fuel = getFuel(totalBlocks)
-while startY > endY do
+
+--Mine layer
+local currentY = startY
+while currentY >= endY do
    for i = 1, 16 do
       for j = 1, 16 do
          mine()
@@ -73,5 +76,6 @@ while startY > endY do
          turtle.turnRight()
       end
    end
-   
 end
+
+

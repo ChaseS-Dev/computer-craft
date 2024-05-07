@@ -8,26 +8,26 @@ function slowPrint(message)
 end
 
 function getFuel(totalBlocks)
-   local fuelLevel = turtle.getFuelLevel()
-   local fuelNeeded = math.ceil((totalBlocks - fuelLevel) / 80)
+   FuelLevel = turtle.getFuelLevel()
+   FuelNeeded = math.ceil((totalBlocks - FuelLevel) / 80)
    local bypass = false
-   print("Fuel level: " .. fuelLevel)
-   print("Coal needed: " .. fuelNeeded)
+   print("Fuel level: " .. FuelLevel)
+   print("Coal needed: " .. FuelNeeded)
    print("Would you like to bypass the fuel check? (y/n)")
    local input = read()
    if input == "y" then
       bypass = true
    end
    while bypass ~= true do
-      if fuelNeeded > fuelLevel then
+      if FuelNeeded > FuelLevel then
          print("Place fuel in slot 1 and hit enter")
          read()
          turtle.select(1)
          turtle.refuel(64)
-         fuelLevel = turtle.getFuelLevel()
-         print("Fuel level: " .. fuelLevel)
-         fuelNeeded = math.ceil((totalBlocks - fuelLevel) / 80)
-         print("Coal needed: " .. fuelNeeded)
+         FuelLevel = turtle.getFuelLevel()
+         print("Fuel level: " .. FuelLevel)
+         FuelNeeded = math.ceil((totalBlocks - FuelLevel) / 80)
+         print("Coal needed: " .. FuelNeeded)
       else
          return
       end
@@ -36,9 +36,9 @@ end
 
 function getTotalBlocks(yLevel)
    local startY = yLevel
-   local totalBlocks = (startY + 64) * 16 ^ 2
-   slowPrint(totalBlocks .. " blocks will be mined.")
-   return totalBlocks
+   TotalBlocks = (startY + 64) * 16 ^ 2
+   slowPrint(TotalBlocks .. " blocks will be mined.")
+   return TotalBlocks
 end
 
 function getCoords()
@@ -46,21 +46,221 @@ function getCoords()
    return x, y, z
 end
 
+function dumpInventory()
+   for i = 1, 16 do
+      turtle.select(i)
+      local item = turtle.getItemDetail()
+      if item.name ~= "minecraft:coal" and FuelNeeded > FuelLevel then
+         turtle.refuel(64)
+         FuelLevel = turtle.getFuelLevel()
+         FuelNeeded = math.ceil((TotalBlocks - FuelLevel) / 80)
+      end
+      turtle.drop()
+   end
+end
+
 function unload()
    local currentX, currentY, currentZ = getCoords()
+   local deltaY = 0
+   local deltaZ = math.abs(currentZ) - math.abs(StartZ)
+   local deltaX = math.abs(currentX) - math.abs(StartX)
    while currentY ~= StartY do
       turtle.up()
+      deltaY = deltaY + 1
    end
    if Rotation == 1 then
       if currentX % 2 == 0 then
          turtle.turnRight()
          turtle.turnRight()
-         for i = 1, abs(currentZ) - abs(StartZ) do
+         for i = 1, deltaZ do
             turtle.forward()
          end
          turtle.turnRight()
-         for i = 1, abs(currentX) - abs(StartX) do
+         for i = 1, deltaX do
             turtle.forward()
+         end
+         turtle.turnLeft()
+         dumpInventory()
+         turtle.turnRight()
+         for i = 1, deltaX do
+            turtle.forward()
+         end
+         turtle.turnLeft()
+         for i = 1, deltaZ do
+            turtle.forward()
+         end
+         for i = 1, deltaY do
+            turtle.down()
+         end
+      else
+         turtle.turnRight()
+         for i = 1, deltaZ do
+            turtle.forward()
+         end
+         turtle.turnLeft()
+         for i = 1, deltaX do
+            turtle.forward()
+         end
+         dumpInventory()
+         turtle.turnRight()
+         turtle.turnRight()
+         for i = 1, deltaX do
+            turtle.forward()
+         end
+         turtle.turnRight()
+         for i = 1, deltaZ do
+            turtle.forward()
+         end
+         for i = 1, deltaY do
+            turtle.down()
+         end
+         turtle.turnRight()
+      end
+   end
+   if Rotation == 2 then
+      if currentZ % 2 ~= 0 then
+         for i = 1, deltaX do
+            turtle.forward()
+         end
+         turtle.turnLeft()
+         for i = 1, deltaZ do
+            turtle.forward()
+         end
+         dumpInventory()
+         turtle.turnLeft()
+         for i = 1, deltaX do
+            turtle.forward()
+         end
+         turtle.turnLeft()
+         for i = 1, deltaZ do
+            turtle.forward()
+         end
+         turtle.turnLeft()
+         for i = 1, deltaY do
+            turtle.down()
+         end
+      else
+         turtle.turnRight()
+         turtle.turnRight()
+         for i = 1, deltaX do
+            turtle.forward()
+         end
+         turtle.turnLeft()
+         for i = i, deltaZ do
+            turtle.forward()
+         end
+         dumpInventory()
+         turtle.turnRight()
+         turtle.turnRight()
+         for i = 1, deltaZ do
+            turtle.forward()
+         end
+         turtle.turnRight()
+         for i = 1, deltaX do
+            turtle.forward()
+         end
+         for i = 1, deltaY do
+            turtle.down()
+         end
+      end
+   end
+   if Rotation == 3 then
+      if currentX % 2 ~= 0 then
+         turtle.turnRight()
+         for i = 1, deltaX do
+            turtle.forward()
+         end
+         turtle.turnLeft()
+         for i = 1, deltaZ do
+            turtle.forward()
+         end
+         dumpInventory()
+         turtle.turnLeft()
+         turtle.turnLeft()
+         for i = 1, deltaZ do
+            turtle.forward()
+         end
+         turtle.turnRight()
+         for i = 1, deltaX do
+            turtle.forward()
+         end
+         turtle.turnRight()
+         for i = 1, deltaY do
+            turtle.down()
+         end
+      else
+         turtle.turnLeft()
+         turtle.turnLeft()
+
+         for i = 1, deltaZ do
+            turtle.forward()
+         end
+         turtle.turnRight()
+         for i = 1, deltaX do
+            turtle.forward()
+         end
+         turtle.turnLeft()
+         dumpInventory()
+         turtle.turnLeft()
+         for i = 1, deltaX do
+            turtle.forward()
+         end
+         turtle.turnLeft()
+         for i = 1, deltaZ do
+            turtle.forward()
+         end
+         for i = 1, deltaY do
+            turtle.down()
+         end
+      end
+   end
+   if Rotation == 4 then
+      if currentZ % 2 == 0 then
+         turtle.turnLeft()
+         turtle.turnLeft()
+         for i = 1, deltaX do
+            turtle.forward()
+         end
+         turtle.turnLeft()
+         for i = 1, deltaZ do
+            turtle.forward()
+         end
+         dumpInventory()
+         turtle.turnRight()
+         turtle.turnRight()
+         for i = 1, deltaZ do
+            turtle.forward()
+         end
+         turtle.turnRight()
+         for i = 1, deltaX do
+            turtle.forward()
+         end
+         turtle.turnRight()
+         for i = 1, deltaY do
+            turtle.down()
+         end
+      else
+         for i = 1, deltaX do
+            turtle.forward()
+         end
+         turtle.turnLeft()
+         for i = 1, deltaZ do
+            turtle.forward()
+         end
+         dumpInventory()
+         turtle.turnLeft()
+         turtle.turnLeft()
+         for i = 1, deltaZ do
+            turtle.forward()
+         end
+         turtle.turnRight()
+         for i = 1, deltaX do
+            turtle.forward()
+         end
+         turtle.turnRight()
+         turtle.turnRight()
+         for i = 1, deltaY do
+            turtle.down()
          end
       end
    end
@@ -76,20 +276,26 @@ function mine()
    end
    turtle.digUp()
    turtle.digDown()
+   local _, block = turtle.inspect()
+   if block.name == "minecraft:gravel" then
+      turtle.dig()
+   end
 end
 
 function mineLayer()
-   for i = 1, 16 do
-      for j = 1, 15 do
+   for x = 0, 15 do
+      for z = 1, 15 do
          mine()
       end
-      if i % 2 == 0 then
+      if x % 2 == 0 then
+         turtle.turnRight()
+         mine()
+         turtle.turnRight()
+      elseif x ~= 15 then
          turtle.turnLeft()
          mine()
          turtle.turnLeft()
       else
-         turtle.turnRight()
-         mine()
          turtle.turnRight()
       end
    end
@@ -100,16 +306,26 @@ function mineChunk(startY, endY)
    local currentX = 0
    local currentY = startY
    local currentZ = 0
+   local firstLayer = true
    while currentY ~= endY do
-      currentX, currentY, currentZ = getCoords()
-      for i = 1, 2 do
-         turtle.digDown()
-         turtle.down()
+      if firstLayer == true then
+         for i = 1, 2 do
+            turtle.digDown()
+            turtle.down()
+         end
       end
+      if firstLayer == false then
+         for i = 1, 3 do
+            turtle.digDown()
+            turtle.down()
+         end
+      end
+      currentX, currentY, currentZ = getCoords()
       turtle.digDown()
       mineLayer()
       turtle.turnRight()
       Rotation = Rotation + 1
+      firstLayer = false
       if Rotation == 4 then
          Rotation = 1
       end

@@ -62,8 +62,8 @@ end
 function unload()
    local currentX, currentY, currentZ = getCoords()
    local deltaY = 0
-   local deltaZ = math.abs(currentZ) - math.abs(StartZ)
-   local deltaX = math.abs(currentX) - math.abs(StartX)
+   local deltaZ = math.abs(math.abs(currentZ) - math.abs(StartZ))
+   local deltaX = math.abs(math.abs(currentX) - math.abs(StartX))
    while currentY ~= StartY do
       turtle.up()
       currentY = currentY + 1
@@ -311,12 +311,12 @@ function mineChunk(startY, endY)
       if Rotation == 5 then
          Rotation = 1
       end
-      if firstLayer == true then
-         for i = 1, 2 do
-            turtle.digDown()
-            turtle.down()
-         end
-      end
+      -- if firstLayer == true then
+      --    for i = 1, 2 do
+      --       turtle.digDown()
+      --       turtle.down()
+      --    end
+      -- end
       if firstLayer == false then
          for i = 1, 3 do
             turtle.digDown()

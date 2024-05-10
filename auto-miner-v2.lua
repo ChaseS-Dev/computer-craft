@@ -329,7 +329,7 @@ function mineChunk(startY, endY)
    local currentY = startY
    local currentZ = 0
    local firstLayer = true
-   while currentY ~= endY do
+   while currentY > endY do
       if Rotation == 5 then
          Rotation = 1
       end

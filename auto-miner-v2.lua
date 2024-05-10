@@ -8,28 +8,32 @@ function slowPrint(message)
 end
 
 function getFuel(totalBlocks)
-   FuelLevel = turtle.getFuelLevel() / 80
-   FuelNeeded = math.ceil((totalBlocks - FuelLevel) / 80)
+   FuelLevel = turtle.getFuelLevel()
+   FuelNeeded = totalBlocks - FuelLevel
    local bypass = false
    print("Fuel level: " .. FuelLevel)
-   print("Coal needed: " .. FuelNeeded)
-   print("Would you like to bypass the fuel check? (y/n)")
-   local input = read()
-   if input == "y" then
-      bypass = true
-   end
-   while bypass ~= true do
-      if FuelNeeded > FuelLevel then
-         print("Place fuel in slot 1 and hit enter")
-         read()
-         turtle.select(1)
-         turtle.refuel(64)
-         FuelLevel = turtle.getFuelLevel()
-         print("Fuel level: " .. FuelLevel)
-         FuelNeeded = math.ceil((totalBlocks - FuelLevel) / 80)
-         print("Coal needed: " .. FuelNeeded)
-      else
-         return
+   if FuelLevel < totalBlocks then
+      print("Coal needed: " .. math.ceil(FuelNeeded / 80))
+      print("Would you like to bypass the fuel check? (y/n)")
+      local input = read()
+      if input == "y" then
+         bypass = true
+      end
+      while bypass ~= true do
+         if FuelNeeded > 0 then
+            print("Place fuel in invetory then hit enter")
+            read()
+            for i = 1, 16 do
+               turtle.select(i)
+               turtle.refuel(64)
+            end
+            FuelLevel = turtle.getFuelLevel()
+            print("Fuel level: " .. FuelLevel)
+            FuelNeeded = totalBlocks - FuelLevel
+            print("Coal needed: " .. math.ceil(FuelNeeded / 80))
+         else
+            return
+         end
       end
    end
 end
@@ -50,11 +54,20 @@ function dumpInventory()
    for i = 1, 16 do
       turtle.select(i)
       local item = turtle.getItemDetail()
-      if item ~= nil and item.name == "minecraft:coal" and FuelNeeded > FuelLevel then
-         turtle.refuel(64)
-         FuelLevel = turtle.getFuelLevel() / 80
-         FuelNeeded = math.ceil((TotalBlocks - FuelLevel) / 80)
+      --check if item is fuel and if fuel is needed
+      for j = 1, #Fuel do
+         if item ~= nil and item.name == Fuel[j] and FuelNeeded > FuelLevel then
+            turtle.refuel(64)
+            FuelLevel = turtle.getFuelLevel()
+            FuelNeeded = math.ceil(TotalBlocks - FuelLevel)
+         end
       end
+
+      -- if item ~= nil and item.name == "minecraft:coal" and FuelNeeded > FuelLevel then
+      --    turtle.refuel(64)
+      --    FuelLevel = turtle.getFuelLevel() / 80
+      --    FuelNeeded = math.ceil((TotalBlocks - FuelLevel) / 80)
+      -- end
       turtle.drop()
    end
 end
@@ -268,6 +281,15 @@ end
 
 function mine()
    if turtle.getItemCount(16) ~= 0 then
+      for i = 1, 16 do
+         turtle.select(i)
+         local item = turtle.getItemDetail()
+         for j = 1, #TrashBlocks do
+            if item ~= nil and item.name == TrashBlocks[j] then
+               turtle.drop()
+            end
+         end
+      end
       unload()
       turtle.select(1)
    end
@@ -311,6 +333,8 @@ function mineChunk(startY, endY)
       if Rotation == 5 then
          Rotation = 1
       end
+      term.clear()
+      print(Rotation)
       -- if firstLayer == true then
       --    for i = 1, 2 do
       --       turtle.digDown()
@@ -332,12 +356,17 @@ function mineChunk(startY, endY)
 end
 
 --Main program
-local endY = -123
 StartX, StartY, StartZ = getCoords()
+TrashBlocks = { "minecraft:gravel", "minecraft:dirt", "minecraft:granite", "minecraft:diorite", "minecraft:andesite",
+   "minecraft:cobblestone", "promenade:blunite", "minecraft:cobbled_deepslate", "minecraft:tuff", "promenade:asphalt",
+   "twigs:rhyolite" }
+Fuel = { "minecraft:coal", "minecraft:charcoal", "modern_industrialization:lignite_coal" }
 if StartY == nil then
    print("Please run the program with a GPS signal.")
    return
 end
 local totalBlocks = getTotalBlocks(StartY)
 local fuel = getFuel(totalBlocks)
+slowPrint("Input ending Y level: ")
+local endY = tonumber(read())
 mineChunk(StartY, endY)

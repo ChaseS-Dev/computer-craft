@@ -1,6 +1,8 @@
 function collect()
    for i = 1, 5 do
       turtle.suck()
+      turtle.suckDown()
+      turtle.suckUp()
       turtle.forward()
    end
    turtle.turnLeft()
@@ -14,6 +16,8 @@ function collect()
    turtle.down()
    for i = 1, 5 do
       turtle.suck()
+      turtle.suckDown()
+      turtle.suckUp()
       turtle.forward()
    end
    turtle.turnLeft()

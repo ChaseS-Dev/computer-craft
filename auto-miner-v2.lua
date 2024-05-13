@@ -28,6 +28,7 @@ function getFuel(totalBlocks)
             for i = 1, 16 do
                turtle.select(i)
                turtle.refuel(64)
+               turtle.select(1)
             end
             FuelLevel = turtle.getFuelLevel()
             print("Fuel level: " .. FuelLevel)
